@@ -16,6 +16,7 @@ from qgis.core import (
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
+    QgsProcessingParameterBoolean,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterNumber,
     QgsProcessingParameterVectorDestination,
@@ -29,6 +30,7 @@ class GrillaSistematicaAleatoria(QgsProcessingAlgorithm):
     DISTANCIA = 'DISTANCIA'
     N_PARCELAS = 'N_PARCELAS'
     SEMILLA = 'SEMILLA'
+    RECORTAR = 'RECORTAR'
     OUTPUT = 'OUTPUT'
 
     # ---------- Metadatos ----------
@@ -56,6 +58,11 @@ class GrillaSistematicaAleatoria(QgsProcessingAlgorithm):
             '<p><b>Semilla</b>: dejarla vacía para obtener una grilla nueva en cada '
             'ejecución. La semilla usada se informa en el registro y en el nombre '
             'de la capa; ingresándola de nuevo se reproduce la misma grilla.</p>'
+            '<p><b>Recortar al contorno del área</b>: si está marcado, solo se '
+            'conservan las parcelas que caen dentro del polígono (útil para áreas '
+            'irregulares). Si se desmarca, la grilla cubre el rectángulo envolvente '
+            'del área y, al indicar número de parcelas, la equidistancia se calcula '
+            'con la superficie de ese rectángulo.</p>'
             '<p>La capa debe estar en un SRC proyectado (metros).</p>'
         )
 
@@ -82,6 +89,10 @@ class GrillaSistematicaAleatoria(QgsProcessingAlgorithm):
             self.SEMILLA, 'Semilla (vacío = grilla nueva)',
             type=QgsProcessingParameterNumber.Integer,
             optional=True, minValue=0))
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.RECORTAR, 'Recortar la grilla al contorno del área de estudio',
+            defaultValue=True))
 
         self.addParameter(QgsProcessingParameterVectorDestination(
             self.OUTPUT, 'Grilla sistemática'))
@@ -113,8 +124,14 @@ class GrillaSistematicaAleatoria(QgsProcessingAlgorithm):
             raise QgsProcessingException(
                 'Completá solo uno de los dos campos: equidistancia o número de parcelas.')
 
+        recortar = self.parameterAsBoolean(parameters, self.RECORTAR, context)
+        ext = fuente.sourceExtent()
+
         if n is not None:
-            area = sum(f.geometry().area() for f in fuente.getFeatures())
+            if recortar:
+                area = sum(f.geometry().area() for f in fuente.getFeatures())
+            else:
+                area = ext.width() * ext.height()
             d = math.sqrt(area / n)
             feedback.pushInfo(f'Área total: {area / 10000:.2f} ha → equidistancia calculada: {d:.1f} m')
 
@@ -126,7 +143,6 @@ class GrillaSistematicaAleatoria(QgsProcessingAlgorithm):
         dy = rng.uniform(0, d)
 
         # Extensión trasladada (-dx, -dy) y ampliada en d para cubrir toda el área
-        ext = fuente.sourceExtent()
         extension = (f'{ext.xMinimum() - dx},{ext.xMaximum() - dx + d},'
                      f'{ext.yMinimum() - dy},{ext.yMaximum() - dy + d} '
                      f'[{crs.authid()}]')
@@ -143,11 +159,22 @@ class GrillaSistematicaAleatoria(QgsProcessingAlgorithm):
         if feedback.isCanceled():
             return {}
 
-        resultado = processing.run('native:clip', {
-            'INPUT': grilla,
-            'OVERLAY': parameters[self.INPUT],
-            'OUTPUT': parameters[self.OUTPUT],
-        }, context=context, feedback=feedback, is_child_algorithm=True)['OUTPUT']
+        if recortar:
+            # Solo los puntos dentro del contorno del polígono
+            resultado = processing.run('native:clip', {
+                'INPUT': grilla,
+                'OVERLAY': parameters[self.INPUT],
+                'OUTPUT': parameters[self.OUTPUT],
+            }, context=context, feedback=feedback, is_child_algorithm=True)['OUTPUT']
+        else:
+            # Todos los puntos dentro del rectángulo envolvente del área
+            resultado = processing.run('native:extractbyextent', {
+                'INPUT': grilla,
+                'EXTENT': f'{ext.xMinimum()},{ext.xMaximum()},'
+                          f'{ext.yMinimum()},{ext.yMaximum()} [{crs.authid()}]',
+                'CLIP': False,
+                'OUTPUT': parameters[self.OUTPUT],
+            }, context=context, feedback=feedback, is_child_algorithm=True)['OUTPUT']
 
         capa = QgsProcessingUtils.mapLayerFromString(resultado, context)
         cantidad = capa.featureCount() if capa else '?'
