@@ -3,8 +3,17 @@ always_allow_html: true
 output:
   github_document
 ---
-## **Herramientas QGIS para monitoreo forestal**
-*Scripts de Procesos para la enseñanza de Dasometría y SIG aplicado a Ecología*
+
+<img src="img/logo.jpg" alt="Logo RGM Forest Tools" width="170" align="left" hspace="20">
+
+## Herramientas QGIS para monitoreo forestal
+
+*Scripts para la enseñanza de Dasometría y SIG aplicado a Ecología*
+
+*Universidad Nacional del Comahue. San Martín de los Andes. Nqn-Argentina*
+
+<br clear="left">
+
 
 ### **Descripción**
 
@@ -12,17 +21,14 @@ Este repositorio reúne herramientas complementarias para QGIS que uso en el dic
 
 Las herramientas fueron pensadas para el trabajo en clase, pero pueden usarse libremente en proyectos de investigación o monitoreo.
 
-*Actualizado: Octubre 2026*
-
-
 ------------------------------------------------------------------------
 
 ### **Modo de uso**
 
 1. **Descargar el script.** Guardar el archivo `.py` en tu computadora.
-2. **Agregarlo a QGIS.** Abrí la Caja de herramientas de Procesos (*Procesos → Caja de herramientas*), hacé clic en el ícono de Python de la barra superior y elegí *Añadir script a la caja de herramientas…*. Seleccioná el archivo descargado.
+2. **Agregarlo a QGIS.** Abrí la Caja de herramientas de Procesos (*Procesos → Caja de herramientas*), hacé clic en el ícono de Python de la barra superior y elegí *Añadir script a la caja de herramientas…*. → Elegir el archivo descargado.
 
-```{r, echo=FALSE, out.width="45%", fig.cap="", fig.align="left"}
+```{r, echo=FALSE, out.width="42%", fig.cap="", fig.align="left"}
 
 knitr::include_graphics("img/instalacion.png")
 
@@ -37,10 +43,11 @@ knitr::include_graphics("img/instalacion.png")
 
 ## Herramientas
 
-### Grilla de muestreo sistemática con arranque aleatorio
+#### Grilla de muestreo sistemática con arranque aleatorio
 
 Genera una grilla regular de parcelas (puntos) dentro de un área de estudio, con el punto de arranque sorteado al azar dentro de una celda. Cada ejecución produce una grilla en otra posición, pero conserva la equidistancia entre parcelas. 
 
 📥 [Descargar `grilla_sistematica_aleatoria.py`](scripts/grilla_sistematica_aleatoria.py)
+
 
 

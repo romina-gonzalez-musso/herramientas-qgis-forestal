@@ -1,8 +1,14 @@
 
-## **Herramientas QGIS para monitoreo forestal**
+<img src="img/logo.jpg" alt="Logo RGM Forest Tools" width="170" align="left" hspace="20">
 
-*Scripts de Procesos para la enseñanza de Dasometría y SIG aplicado a
-Ecología*
+## Herramientas QGIS para monitoreo forestal
+
+*Scripts para la enseñanza de Dasometría y SIG aplicado a Ecología*
+
+*Universidad Nacional del Comahue. San Martín de los Andes.
+Nqn-Argentina*
+
+<br clear="left">
 
 ### **Descripción**
 
@@ -15,8 +21,6 @@ sin necesidad de escribir código.
 Las herramientas fueron pensadas para el trabajo en clase, pero pueden
 usarse libremente en proyectos de investigación o monitoreo.
 
-*Actualizado: Octubre 2026*
-
 ------------------------------------------------------------------------
 
 ### **Modo de uso**
@@ -25,9 +29,9 @@ usarse libremente en proyectos de investigación o monitoreo.
 2.  **Agregarlo a QGIS.** Abrí la Caja de herramientas de Procesos
     (*Procesos → Caja de herramientas*), hacé clic en el ícono de Python
     de la barra superior y elegí *Añadir script a la caja de
-    herramientas…*. Seleccioná el archivo descargado.
+    herramientas…*. → Elegir el archivo descargado.
 
-<img src="img/instalacion.png" alt="" width="45%" style="display: block; margin: auto auto auto 0;" />
+<img src="img/instalacion.png" alt="" width="42%" style="display: block; margin: auto auto auto 0;" />
 
 <div style="margin-bottom: 30px;">
 
@@ -40,7 +44,7 @@ usarse libremente en proyectos de investigación o monitoreo.
 
 ## Herramientas
 
-### Grilla de muestreo sistemática con arranque aleatorio
+#### Grilla de muestreo sistemática con arranque aleatorio
 
 Genera una grilla regular de parcelas (puntos) dentro de un área de
 estudio, con el punto de arranque sorteado al azar dentro de una celda.
